@@ -30,21 +30,39 @@ ul {
   list-style-type: none;
 }
 
-/* Task 2.1. Lay out the childs of the 'body' using Grid Template Areas. */
+/* Task 2.1. Lay out the childs of the 'body' using Grid Template Areas.
+ */
+/* DEFAULT: Mobile-first (One-column stack) */
 body {
-  display: grid;
-  grid-template-areas: 
-    "header header"
-    "nav    main"
-    "footer footer";
-  grid-template-rows: auto 1fr auto;
-  grid-template-columns: 200px 1fr;
+  display: flex;
+  flex-direction: column;
+  height: auto; /* Allow the page to grow with content on mobile */
+  margin: 0;
+}
+/* DESKTOP: Only apply Grid on wider screens */
+@media (min-width: 768px) {
+  body {
+    display: grid;
+    height: 100vh; /* Full viewport height for desktop layout */
+    grid-template-areas: 
+      "header header"
+      "nav    main"
+      "footer footer";
+      /* 1fr means one fraction (=all) of the available space. I chose this instead of auto so that the footer stays visible at the bottom */
+    grid-template-rows: 64px 1fr  64px;
+    grid-template-columns: 192px 1fr;
+    overflow: hidden; /* Prevents the entire page from scrolling, only main will scroll if needed */
+  }
+
+  header { grid-area: header; }
+  nav    { grid-area: nav;    }
+  main   { grid-area: main;   }
+  footer { 
+    grid-area: footer;
+  }
 }
 
-header { grid-area: header; }
-nav    { grid-area: nav;    }
-main   { grid-area: main;   }
-footer { grid-area: footer; }
+
 
 /* Task 3.1. Make the header element a flex container and center its children
    vertically and horizontally.
@@ -68,20 +86,26 @@ nav ul li {
 /* Task 3.3. Make the main element a Flexbox container */
 main {
   display: flex;
-  flex-wrap: wrap;       /* Allows movies to wrap to the next line */
+  flex-wrap: wrap;      /* Allows movies to wrap to the next line */
   gap: 16px;             /* Space between movie articles */
   overflow-y: auto;      /* Allows scrolling within the main area only */
   padding: 16px;
   justify-content: flex-start;
 }
 
-/* Task 3.4. Make the footer's ul a Flexbox container */
+/* Task 3.4. Make the footer's ul a Flexbox container 
+NOTE: Footer itself is not a flex container, only the ul inside it.
+So the footer will not be centered, but the list items inside the ul will be centered and arranged in a column.
+*/
 
 footer ul {
   display: flex;
   flex-direction: column; /* Vertical layout as requested in Task 1.1/3 */
   align-items: center;
   margin: 8px 0;
+  padding: 0;
+  position: sticky; /* Makes the footer stick to the bottom of the viewport */
+  bottom: 0;
 }
 /* From here on styling from exercise 1 */
 img {
@@ -90,7 +114,7 @@ img {
 }
 
 article {
-  background-color: lightgray;
+  background-color: beige;
   border-radius: 16px;
   padding: 16px;
   width: 384px;
@@ -113,4 +137,12 @@ span {
   border-radius: 6px;
   background-color: darkgray;
   font-weight: bold;
+}
+
+.rating {
+  font-size: 90%;
+  color: #6ea9e5;
+  border:#555 solid 1px;
+  border-radius: 12px;
+  padding: 4px 8px;
 }

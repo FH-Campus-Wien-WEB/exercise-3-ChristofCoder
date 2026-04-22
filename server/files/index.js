@@ -30,6 +30,9 @@ function appendMovie(movie, element) {
               "\u2022",
               "Released on " +
                 new Date(movie.Released).toLocaleDateString("en-US")))
+          .append(new ParagraphBuilder().childClass("rating").items(
+              "IMDb " + movie.imdbRating,
+              "Metascore " + movie.Metascore))
           .append(new ParagraphBuilder().childClass("genre").items(movie.Genres))
           .append(new ElementBuilder("p").text(movie.Plot))
           .append(new ElementBuilder("h2").pluralizedText("Director", movie.Directors))
@@ -63,7 +66,8 @@ function loadMovies(genre) {
   const url = new URL("/movies", location.href)
   /* Task 1.4. Add query parameter to the url if a genre is given */
   if (genre) {
-    // This adds "?genre=Drama" to the URL
+    // This adds "?genre=Drama" to the URL. If genre==null, this if statement is not executed
+    //  and no query parameter is added, so the server will return all movies.
     url.searchParams.set('genre', genre);
     /*
     Using url.searchParams.set() is much safer than manual string concatenation 
@@ -76,6 +80,10 @@ function loadMovies(genre) {
   xhr.open("GET", url)
   xhr.send()
 }
+
+
+
+
 
 window.onload = function () {
   const xhr = new XMLHttpRequest();

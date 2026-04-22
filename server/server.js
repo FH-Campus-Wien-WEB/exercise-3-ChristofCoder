@@ -47,7 +47,7 @@ app.get('/movies', function (req, res) {
 
   if (filterGenre) {
     movies = movies.filter(movie => 
-      // Ensure movie.Genres exists and is an array/string containing the genre
+      // Ensure movie.Genres exists && is an array/string containing the genre
       movie.Genres && movie.Genres.includes(filterGenre)
     );
   }
@@ -64,30 +64,31 @@ app.get('/movies', function (req, res) {
 */
 // Configure a 'get' endpoint for a specific movie
 app.get('/movies/:imdbID', function (req, res) {
-  const id = req.params.imdbID
-  const exists = id in movieModel
- 
-  if (exists) {
-    res.send(movieModel[id])
-  } else {
-    res.sendStatus(404)    
-  }
+  const imdbID = req.params.imdbID; // Get the imdbID from the request parameters
+    const movie = movieModel[imdbID]; // Look up the movie in the model using the imdbID as the key
+    if (movie) {
+      res.send(movie); // If the movie exists, send it as a JSON response
+      // Note: res.send() can also be used to send JSON objects, but res.json() is more explicit for sending JSON responses. 
+      // We could also use res.json(movie) here, which would automatically set the Content-Type to application/json and stringify the movie object.
+    } else {
+      res.status(404).json({ error: "Movie not found" }); // If not found, send a 404 error response
+    }  
 })
 
 app.put('/movies/:imdbID', function(req, res) {
 
-  const id = req.params.imdbID
-  const exists = id in movieModel
+  const imdbID = req.params.imdbID; // Get the imdbID from the request parameters
+  const updatedMovie = req.body; // Get the updated movie data from the request body
 
-  movieModel[req.params.imdbID] = req.body;
-  
-  if (!exists) {
-    res.status(201)
-    res.send(req.body)
+  if (movieModel[imdbID]) {
+    // If the movie exists, update it with the new data
+    movieModel[imdbID] = updatedMovie; // Update the movie in the model with the new data
+    res.sendStatus(200) // Send a 200 OK response to indicate successful update
   } else {
-    res.sendStatus(200)
+    // If the movie dose not exist, add the received movie to your server-side model and send a 201 Created response
+    movieModel[imdbID] = updatedMovie; // Add the new movie to the model using the imdbID as the key
+    res.sendStatus(201) // Send a 201 Created response to indicate successful creation of a new resource  
   }
-  
 })
 
 app.listen(3000)
