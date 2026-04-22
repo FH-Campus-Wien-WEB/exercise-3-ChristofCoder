@@ -62,7 +62,17 @@ function loadMovies(genre) {
 
   const url = new URL("/movies", location.href)
   /* Task 1.4. Add query parameter to the url if a genre is given */
-
+  if (genre) {
+    // This adds "?genre=Drama" to the URL
+    url.searchParams.set('genre', genre);
+    /*
+    Using url.searchParams.set() is much safer than manual string concatenation 
+    (like url + "?genre=" + genre). It automatically handles URL encoding 
+    so if your genre is "Sci-Fi" or "Romance & Drama", the spaces and special 
+    characters are converted into a format the browser and server can understand 
+    perfectly (e.g., Sci-Fi becomes Sci-Fi but & becomes %26).
+    */ 
+  }
   xhr.open("GET", url)
   xhr.send()
 }
@@ -76,7 +86,35 @@ window.onload = function () {
       /* Task 1.3. Add the genre buttons to the listElement and 
          initialize them with a click handler that calls the 
          loadMovies(...) function above. */
+
       const genres = JSON.parse(xhr.responseText);
+
+      // 1. Clear the list first (optional but good practice)
+      listElement.innerHTML = '';
+
+      // 2. Helper to create a list item with a button
+      const addGenreItem = (label, value) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        
+        btn.addEventListener("click", () => {
+          // Clear current movies and load new selection
+          document.querySelector("main").innerHTML = "";
+          loadMovies(value);
+        });
+        
+        li.appendChild(btn);
+        listElement.appendChild(li);
+      };
+
+      // 3. Add the "All" button at the beginning
+      addGenreItem("All", null);
+
+      // 4. Add each genre returned from the server
+      genres.forEach(genre => {
+        addGenreItem(genre, genre);
+      });
 
       /* When a first button exists, we click it to load all movies. */
       const firstButton = document.querySelector("nav button");
